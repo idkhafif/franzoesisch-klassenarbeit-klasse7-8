@@ -409,6 +409,7 @@
       <div class="toolbar">
         <button class="success" type="button" onclick="checkExam()">Auswerten</button>
         <button id="submitButton" type="button" onclick="submitExam()">Abgeben</button>
+        <button class="secondary" type="button" onclick="createNewExam()">Neue Klassenarbeit</button>
         <button class="secondary" type="button" onclick="resetExam()">Zurücksetzen</button>
         <button class="secondary" type="button" onclick="window.print()">Drucken</button>
       </div>
@@ -437,6 +438,8 @@
         <div class="score-card"><span>Note</span><strong id="grade">-</strong></div>
       </div>
       <div class="progress"><div id="progressBar"></div></div>
+
+      <p class="task-desc" id="variantNotice">Variante 1: Nach der Abgabe kannst du eine neue Klassenarbeit starten.</p>
 
       <main>
         <section>
@@ -556,6 +559,11 @@
           </div>
         </section>
 
+        <section>
+          <h2>Weiter üben</h2>
+          <p class="task-desc">Zusätzliche Online-Übungen: <a href="https://apprendre.tv5monde.com/fr/exercices" target="_blank" rel="noopener noreferrer">TV5MONDE</a> und <a href="https://www.francaisfacile.com/exercices/" target="_blank" rel="noopener noreferrer">FrançaisFacile</a>.</p>
+        </section>
+
         <div id="result" class="result-box" aria-live="polite">
           <h3 id="resultTitle">Ergebnis</h3>
           <div class="result-main">
@@ -564,6 +572,7 @@
             <div><span>Note</span><strong id="resultGrade">-</strong></div>
           </div>
           <p id="submitStatus" class="submit-status"></p>
+          <button class="secondary" type="button" onclick="createNewExam()">Neue Klassenarbeit erstellen</button>
         </div>
       </main>
     </div>
@@ -574,6 +583,77 @@
     let lastAutoScore = 0;
     const totalAuto = 60;
     const totalAll = 70;
+    let examVariant = 1;
+
+    // Each new version mixes the existing questions with these additional ones.
+    const extraQuestions = [
+      [
+        "Je <input type=\"text\" data-ans=\"parle\"> français avec mes amis. (parler)",
+        "Vous <input type=\"text\" data-ans=\"prenez\"> le bus chaque matin. (prendre)",
+        "Mon frère <input type=\"text\" data-ans=\"joue\"> au football. (jouer)",
+        "Nous <input type=\"text\" data-ans=\"pouvons\"> venir demain. (pouvoir)",
+        "Tu <input type=\"text\" data-ans=\"veux\"> un jus d'orange ? (vouloir)"
+      ],
+      [
+        "Hier, j' <input type=\"text\" data-ans=\"ai regardé|ai regarde\"> un film. (regarder)",
+        "Demain, tu <input type=\"text\" data-ans=\"vas prendre\"> le train. (prendre)",
+        "Samedi dernier, nous <input type=\"text\" data-ans=\"avons joué|avons joue\"> au tennis. (jouer)",
+        "Ce soir, elle <input type=\"text\" data-ans=\"va faire\"> ses devoirs. (faire)",
+        "L'année dernière, ils <input type=\"text\" data-ans=\"ont visité|ont visite\"> Lyon. (visiter)"
+      ],
+      [
+        "Voici le professeur <input type=\"text\" data-ans=\"qui\"> explique la leçon.",
+        "C'est le gâteau <input type=\"text\" data-ans=\"que\"> nous préparons.",
+        "Paris est une ville <input type=\"text\" data-ans=\"où|ou\"> il y a beaucoup de musées.",
+        "Le vélo <input type=\"text\" data-ans=\"que\"> tu préfères est rouge.",
+        "J'ai une amie <input type=\"text\" data-ans=\"qui\"> habite à Marseille."
+      ],
+      [
+        "Le train est <input type=\"text\" data-ans=\"plus\"> rapide que le bus. (+)",
+        "C'est le livre <input type=\"text\" data-ans=\"le plus\"> intéressant de la série.",
+        "Ma chambre est <input type=\"text\" data-ans=\"aussi\"> grande que la tienne. (=)",
+        "Cette rue est <input type=\"text\" data-ans=\"la moins\"> bruyante du quartier.",
+        "Le vélo est <input type=\"text\" data-ans=\"moins\"> cher que la voiture. (-)"
+      ],
+      [
+        "Nous allons <input type=\"text\" data-ans=\"à la|a la\"> gare.",
+        "Je vais <input type=\"text\" data-ans=\"au\"> restaurant avec ma famille.",
+        "Elle va <input type=\"text\" data-ans=\"à l'|a l'|à l|a l\"> université.",
+        "Ils vont <input type=\"text\" data-ans=\"aux\"> toilettes.",
+        "Tu vas <input type=\"text\" data-ans=\"à la|a la\"> boulangerie."
+      ],
+      [
+        "Nous mangeons <input type=\"text\" data-ans=\"du\"> riz.",
+        "Tu bois <input type=\"text\" data-ans=\"de l'|de l\"> orangeade.",
+        "J'achète <input type=\"text\" data-ans=\"des\"> fraises.",
+        "Elle mange <input type=\"text\" data-ans=\"de la\"> soupe.",
+        "Vous prenez <input type=\"text\" data-ans=\"du\"> poisson."
+      ]
+    ];
+    const questionPools = Array.from(document.querySelectorAll(".exercise-grid")).map((grid, index) =>
+      Array.from(grid.querySelectorAll(".exercise-row")).map((row) => row.innerHTML.replace(/^\s*\d+\.\s*/, "")).concat(extraQuestions[index])
+    );
+
+    function shuffled(items) {
+      const copy = [...items];
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const other = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[other]] = [copy[other], copy[index]];
+      }
+      return copy;
+    }
+
+    function createNewExam() {
+      examVariant += 1;
+      document.querySelectorAll(".exercise-grid").forEach((grid, index) => {
+        const selected = shuffled(questionPools[index]).slice(0, 10);
+        grid.innerHTML = selected.map((question, number) =>
+          '<div class="exercise-row">' + (number + 1) + ". " + question + "</div>"
+        ).join("");
+      });
+      document.getElementById("variantNotice").textContent = "Variante " + examVariant + ": Neue Aufgaben wurden zusammengestellt.";
+      resetExam();
+    }
 
     function normalizeAnswer(value) {
       return value
