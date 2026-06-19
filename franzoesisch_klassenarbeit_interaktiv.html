@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Französisch Klassenarbeit - Klasse 7/8</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5d6875;
+      --paper: #fffdf8;
+      --line: #d9dee5;
+      --blue: #2364aa;
+      --green: #1f8f5f;
+      --red: #c0392b;
+      --yellow: #f5c542;
+      --soft-blue: #eaf3ff;
+      --soft-green: #e8f6ee;
+      --soft-red: #fdebea;
+      --shadow: 0 12px 30px rgba(23, 32, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(35, 100, 170, 0.12), transparent 38%),
+        linear-gradient(315deg, rgba(245, 197, 66, 0.18), transparent 34%),
+        #f2f5f7;
+    }
+
+    .app {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 40px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 0;
+      background: rgba(242, 245, 247, 0.92);
+      backdrop-filter: blur(10px);
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.8vw, 2.2rem);
+      letter-spacing: 0;
+    }
+
+    .title p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 14px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: var(--blue);
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    button:hover {
+      filter: brightness(0.95);
+      transform: translateY(-1px);
+    }
+
+    button.secondary {
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid var(--line);
+    }
+
+    button.success {
+      background: var(--green);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      filter: grayscale(0.35);
+      opacity: 0.7;
+      transform: none;
+    }
+
+    .sheet {
+      background: var(--paper);
+      border: 1px solid rgba(23, 32, 42, 0.08);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .student-row {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      gap: 12px;
+      padding: 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border: 1px solid #bfc7d1;
+      border-radius: 6px;
+      padding: 9px 10px;
+      font: inherit;
+      background: #ffffff;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus {
+      border-color: var(--blue);
+      outline: 3px solid rgba(35, 100, 170, 0.16);
+    }
+
+    .score-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .score-card {
+      padding: 14px 16px;
+      background: #f8fafc;
+    }
+
+    .score-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .score-card strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.35rem;
+    }
+
+    .progress {
+      height: 8px;
+      background: #e5e9ef;
+      overflow: hidden;
+    }
+
+    .progress div {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+      transition: width 0.25s ease;
+    }
+
+    main {
+      padding: 18px;
+    }
+
+    section {
+      padding: 18px 0 6px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-child {
+      border-bottom: 0;
+    }
+
+    h2 {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+      color: var(--blue);
+    }
+
+    h2 small {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .task-desc {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+    }
+
+    .exercise-row {
+      min-height: 48px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 10px;
+      background: #ffffff;
+      border: 1px solid #edf0f3;
+      border-radius: 6px;
+    }
+
+    .exercise-row input {
+      width: min(180px, 100%);
+      min-width: 120px;
+      padding: 7px 8px;
+    }
+
+    .exercise-row.correct {
+      background: var(--soft-green);
+      border-color: rgba(31, 143, 95, 0.45);
+    }
+
+    .exercise-row.incorrect {
+      background: var(--soft-red);
+      border-color: rgba(192, 57, 43, 0.45);
+    }
+
+    .feedback {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .feedback.ok {
+      color: var(--green);
+    }
+
+    .feedback.err {
+      color: var(--red);
+    }
+
+    .writing-box {
+      display: grid;
+      grid-template-columns: 1fr 170px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    textarea {
+      min-height: 190px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .manual-points {
+      padding: 14px;
+      background: var(--soft-blue);
+      border: 1px solid rgba(35, 100, 170, 0.22);
+      border-radius: 6px;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      background: #ffffff;
+      border: 2px solid var(--green);
+      border-radius: 8px;
+    }
+
+    .result-box h3 {
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .submit-status {
+      min-height: 24px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .submit-status.ok {
+      color: var(--green);
+    }
+
+    .submit-status.err {
+      color: var(--red);
+    }
+
+    .result-main {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .result-main div {
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+    }
+
+    .result-main span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .result-main strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 1.35rem;
+    }
+
+    @media (max-width: 760px) {
+      .topbar,
+      .student-row,
+      .score-strip,
+      .exercise-grid,
+      .writing-box,
+      .result-main {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        justify-content: stretch;
+      }
+
+      button {
+        flex: 1 1 140px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .app {
+        width: 100%;
+        padding: 0;
+      }
+
+      .topbar {
+        position: static;
+        background: #ffffff;
+      }
+
+      .toolbar,
+      .progress,
+      .result-box {
+        display: none !important;
+      }
+
+      .sheet {
+        box-shadow: none;
+        border: 0;
+      }
+
+      .exercise-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="title">
+        <h1>Grandes Révisions</h1>
+        <p>Interaktive Französisch-Klassenarbeit für Klasse 7/8</p>
+      </div>
+      <div class="toolbar">
+        <button class="success" type="button" onclick="checkExam()">Auswerten</button>
+        <button id="submitButton" type="button" onclick="submitExam()">Abgeben</button>
+        <button class="secondary" type="button" onclick="resetExam()">Zurücksetzen</button>
+        <button class="secondary" type="button" onclick="window.print()">Drucken</button>
+      </div>
+    </header>
+
+    <div class="sheet">
+      <div class="student-row">
+        <div class="field">
+          <label for="studentName">Name</label>
+          <input id="studentName" type="text" value="Johanna">
+        </div>
+        <div class="field">
+          <label for="examDate">Datum</label>
+          <input id="examDate" type="text">
+        </div>
+        <div class="field">
+          <label for="duration">Arbeitszeit</label>
+          <input id="duration" type="text" value="45 Minuten">
+        </div>
+      </div>
+
+      <div class="score-strip">
+        <div class="score-card"><span>Automatisch</span><strong id="autoScore">0 / 60</strong></div>
+        <div class="score-card"><span>Schreiben</span><strong id="writingScore">0 / 10</strong></div>
+        <div class="score-card"><span>Gesamt</span><strong id="totalScore">0 / 70</strong></div>
+        <div class="score-card"><span>Note</span><strong id="grade">-</strong></div>
+      </div>
+      <div class="progress"><div id="progressBar"></div></div>
+
+      <main>
+        <section>
+          <h2>Teil A: Konjugation <small>10 Punkte</small></h2>
+          <p class="task-desc">Setze die richtige Verbform im Präsens ein.</p>
+          <div class="exercise-grid">
+            <div class="exercise-row">1. Nous <input type="text" data-ans="allons"> au cinéma le samedi. (aller)</div>
+            <div class="exercise-row">2. Tu <input type="text" data-ans="lis"> un livre intéressant ? (lire)</div>
+            <div class="exercise-row">3. Elles <input type="text" data-ans="sont"> très contentes aujourd'hui. (être)</div>
+            <div class="exercise-row">4. J' <input type="text" data-ans="ai"> un hamster et un lapin. (avoir)</div>
+            <div class="exercise-row">5. Vous <input type="text" data-ans="faites"> vos devoirs après l'école. (faire)</div>
+            <div class="exercise-row">6. Mes amis <input type="text" data-ans="viennent"> chez moi ce soir. (venir)</div>
+            <div class="exercise-row">7. Je <input type="text" data-ans="choisis"> un cadeau pour ma mère. (choisir)</div>
+            <div class="exercise-row">8. Nous <input type="text" data-ans="attendons"> longtemps le bus. (attendre)</div>
+            <div class="exercise-row">9. Tu <input type="text" data-ans="finis"> ton repas à la cantine ? (finir)</div>
+            <div class="exercise-row">10. Ils <input type="text" data-ans="font"> un film pour le week-end. (faire)</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Teil B: Futur composé oder Passé composé? <small>10 Punkte</small></h2>
+          <p class="task-desc">Achte auf Signalwörter wie hier, demain, ce soir und setze die passende Form ein.</p>
+          <div class="exercise-grid">
+            <div class="exercise-row">1. Hier, nous <input type="text" data-ans="avons mangé|avons mange"> une pizza. (manger)</div>
+            <div class="exercise-row">2. Demain, je <input type="text" data-ans="vais aller"> chez ma grand-mère. (aller)</div>
+            <div class="exercise-row">3. La semaine dernière, ils <input type="text" data-ans="sont venus"> à la maison. (venir)</div>
+            <div class="exercise-row">4. Ce soir, nous <input type="text" data-ans="allons regarder"> un film. (regarder)</div>
+            <div class="exercise-row">5. Hier, elle <input type="text" data-ans="a fait"> ses devoirs. (faire)</div>
+            <div class="exercise-row">6. Samedi prochain, vous <input type="text" data-ans="allez finir"> le projet. (finir)</div>
+            <div class="exercise-row">7. Lundi dernier, j' <input type="text" data-ans="ai eu"> un contrôle. (avoir)</div>
+            <div class="exercise-row">8. Ce week-end, nous <input type="text" data-ans="allons visiter"> Paris. (visiter)</div>
+            <div class="exercise-row">9. Hier, tu <input type="text" data-ans="as lu"> un manga. (lire)</div>
+            <div class="exercise-row">10. Demain, elles <input type="text" data-ans="vont choisir"> un nouveau livre. (choisir)</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Teil C: Qui, que ou où? <small>10 Punkte</small></h2>
+          <p class="task-desc">Ergänze das passende Relativpronomen.</p>
+          <div class="exercise-grid">
+            <div class="exercise-row">1. C'est un garçon <input type="text" data-ans="qui"> aime les animaux.</div>
+            <div class="exercise-row">2. Voilà le livre <input type="text" data-ans="que"> je lis.</div>
+            <div class="exercise-row">3. C'est la ville <input type="text" data-ans="où|ou"> j'habite.</div>
+            <div class="exercise-row">4. J'aime les histoires <input type="text" data-ans="qui"> sont intéressantes.</div>
+            <div class="exercise-row">5. Voici la photo <input type="text" data-ans="que"> j'ai prise hier.</div>
+            <div class="exercise-row">6. C'est le jour <input type="text" data-ans="où|ou"> nous avons un contrôle.</div>
+            <div class="exercise-row">7. Voilà les amis <input type="text" data-ans="qui"> viennent chez moi.</div>
+            <div class="exercise-row">8. Le film <input type="text" data-ans="que"> nous regardons est drôle.</div>
+            <div class="exercise-row">9. C'est l'école <input type="text" data-ans="où|ou"> je vais chaque jour.</div>
+            <div class="exercise-row">10. Le chien <input type="text" data-ans="qui"> court dans le jardin est rapide.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Teil D: Comparatif ou superlatif? <small>10 Punkte</small></h2>
+          <p class="task-desc">Setze ein: plus, moins, aussi, le plus, la plus, le moins oder la moins.</p>
+          <div class="exercise-grid">
+            <div class="exercise-row">1. Le chat est <input type="text" data-ans="plus"> rapide que la tortue. (+)</div>
+            <div class="exercise-row">2. Le guépard est l'animal <input type="text" data-ans="le plus"> rapide du monde.</div>
+            <div class="exercise-row">3. Mon frère est <input type="text" data-ans="aussi"> sportif que moi. (=)</div>
+            <div class="exercise-row">4. Emma est l'élève <input type="text" data-ans="la plus"> intelligente de la classe.</div>
+            <div class="exercise-row">5. Le hamster est <input type="text" data-ans="moins"> grand que le lapin. (-)</div>
+            <div class="exercise-row">6. Marie est <input type="text" data-ans="plus"> gentille que sa sœur. (+)</div>
+            <div class="exercise-row">7. Cette ville est <input type="text" data-ans="la plus"> belle de la région.</div>
+            <div class="exercise-row">8. Le français est <input type="text" data-ans="moins"> difficile que les maths. (-)</div>
+            <div class="exercise-row">9. C'est <input type="text" data-ans="le moins"> grand animal de la liste.</div>
+            <div class="exercise-row">10. Paul est <input type="text" data-ans="aussi"> grand que Lucas. (=)</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Teil E: à, au, à la, à l', aux <small>10 Punkte</small></h2>
+          <p class="task-desc">Ergänze die richtige Richtung oder Ortsangabe.</p>
+          <div class="exercise-grid">
+            <div class="exercise-row">1. Je vais <input type="text" data-ans="à l'|a l'|à l|a l"> école.</div>
+            <div class="exercise-row">2. Nous allons <input type="text" data-ans="au"> cinéma.</div>
+            <div class="exercise-row">3. Ils vont <input type="text" data-ans="au"> supermarché.</div>
+            <div class="exercise-row">4. Tu vas <input type="text" data-ans="aux"> États-Unis.</div>
+            <div class="exercise-row">5. Elle va <input type="text" data-ans="à la|a la"> piscine.</div>
+            <div class="exercise-row">6. Nous allons <input type="text" data-ans="au"> musée.</div>
+            <div class="exercise-row">7. Vous allez <input type="text" data-ans="aux"> magasins.</div>
+            <div class="exercise-row">8. Je vais <input type="text" data-ans="à l'|a l'|à l|a l"> hôpital.</div>
+            <div class="exercise-row">9. Elles vont <input type="text" data-ans="à la|a la"> bibliothèque.</div>
+            <div class="exercise-row">10. Il va <input type="text" data-ans="au"> zoo.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Teil F: du, de la, de l', des <small>10 Punkte</small></h2>
+          <p class="task-desc">Teilungsartikel: Was essen oder trinken sie?</p>
+          <div class="exercise-grid">
+            <div class="exercise-row">1. Je mange <input type="text" data-ans="du"> pain.</div>
+            <div class="exercise-row">2. Elle boit <input type="text" data-ans="de l'|de l"> eau.</div>
+            <div class="exercise-row">3. Nous achetons <input type="text" data-ans="des"> pommes.</div>
+            <div class="exercise-row">4. Tu manges <input type="text" data-ans="du"> fromage.</div>
+            <div class="exercise-row">5. Ils veulent <input type="text" data-ans="de la"> glace.</div>
+            <div class="exercise-row">6. J'achète <input type="text" data-ans="des"> biscuits.</div>
+            <div class="exercise-row">7. Vous mangez <input type="text" data-ans="de la"> viande.</div>
+            <div class="exercise-row">8. Nous prenons <input type="text" data-ans="des"> oranges.</div>
+            <div class="exercise-row">9. Elle boit <input type="text" data-ans="du"> lait.</div>
+            <div class="exercise-row">10. Je mange <input type="text" data-ans="de la"> salade.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Teil G: Schreibaufgabe <small>10 Punkte</small></h2>
+          <p class="task-desc">Mon week-end idéal. Schreibe 8 bis 10 Sätze auf Französisch.</p>
+          <div class="writing-box">
+            <textarea id="writingText" placeholder="Mon week-end idéal commence..."></textarea>
+            <div class="manual-points">
+              <div class="field">
+                <label for="manualScore">Punkte Teil G</label>
+                <input id="manualScore" type="number" min="0" max="10" value="0" oninput="updateScoreDisplay(lastAutoScore)">
+              </div>
+              <p class="task-desc">Teil G wird manuell bewertet und zur Gesamtnote addiert.</p>
+            </div>
+          </div>
+        </section>
+
+        <div id="result" class="result-box" aria-live="polite">
+          <h3 id="resultTitle">Ergebnis</h3>
+          <div class="result-main">
+            <div><span>Automatische Teile A-F</span><strong id="resultAuto">0 / 60</strong></div>
+            <div><span>Mit Schreibaufgabe</span><strong id="resultTotal">0 / 70</strong></div>
+            <div><span>Note</span><strong id="resultGrade">-</strong></div>
+          </div>
+          <p id="submitStatus" class="submit-status"></p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const FORM_ENDPOINT = "https://formspree.io/f/xdavqeww";
+    let lastAutoScore = 0;
+    const totalAuto = 60;
+    const totalAll = 70;
+
+    function normalizeAnswer(value) {
+      return value
+        .trim()
+        .toLowerCase()
+        .replace(/[’´`]/g, "'")
+        .replace(/\s+/g, " ");
+    }
+
+    function prettyAnswer(raw) {
+      return raw.split("|")[0];
+    }
+
+    function manualPoints() {
+      const field = document.getElementById("manualScore");
+      const value = Number(field.value || 0);
+      return Math.max(0, Math.min(10, value));
+    }
+
+    function gradeFromPercent(percent) {
+      if (percent >= 92) return "1";
+      if (percent >= 81) return "2";
+      if (percent >= 67) return "3";
+      if (percent >= 50) return "4";
+      if (percent >= 25) return "5";
+      return "6";
+    }
+
+    function updateScoreDisplay(autoScore) {
+      const manual = manualPoints();
+      const total = autoScore + manual;
+      const grade = gradeFromPercent((total / totalAll) * 100);
+
+      document.getElementById("autoScore").textContent = autoScore + " / " + totalAuto;
+      document.getElementById("writingScore").textContent = manual + " / 10";
+      document.getElementById("totalScore").textContent = total + " / " + totalAll;
+      document.getElementById("grade").textContent = grade;
+      document.getElementById("progressBar").style.width = Math.round((total / totalAll) * 100) + "%";
+
+      document.getElementById("resultAuto").textContent = autoScore + " / " + totalAuto;
+      document.getElementById("resultTotal").textContent = total + " / " + totalAll;
+      document.getElementById("resultGrade").textContent = grade;
+    }
+
+    function collectAnswers() {
+      return Array.from(document.querySelectorAll("input[data-ans]")).map((input, index) => {
+        const row = input.closest(".exercise-row");
+        const expected = prettyAnswer(input.dataset.ans);
+        const answer = input.value.trim();
+        const correct = input.dataset.ans.split("|").map(normalizeAnswer).includes(normalizeAnswer(answer));
+
+        return {
+          nummer: index + 1,
+          aufgabe: row.textContent.replace(/\s+/g, " ").trim(),
+          antwort: answer,
+          loesung: expected,
+          richtig: correct
+        };
+      });
+    }
+
+    function buildSubmission() {
+      const manual = manualPoints();
+      const total = lastAutoScore + manual;
+      const percent = Math.round((total / totalAll) * 100);
+
+      return {
+        name: document.getElementById("studentName").value.trim(),
+        datum: document.getElementById("examDate").value.trim(),
+        arbeitszeit: document.getElementById("duration").value.trim(),
+        punkte_automatisch: lastAutoScore,
+        punkte_schreiben: manual,
+        punkte_gesamt: total,
+        punkte_maximal: totalAll,
+        prozent: percent,
+        note: gradeFromPercent((total / totalAll) * 100),
+        schreibaufgabe: document.getElementById("writingText").value.trim(),
+        antworten_json: JSON.stringify(collectAnswers(), null, 2)
+      };
+    }
+
+    function checkExam() {
+      let score = 0;
+      document.querySelectorAll(".feedback").forEach((el) => el.remove());
+
+      document.querySelectorAll("input[data-ans]").forEach((input) => {
+        const row = input.closest(".exercise-row");
+        const userAnswer = normalizeAnswer(input.value);
+        const answers = input.dataset.ans.split("|").map(normalizeAnswer);
+        const isCorrect = answers.includes(userAnswer);
+
+        row.classList.remove("correct", "incorrect");
+        row.classList.add(isCorrect ? "correct" : "incorrect");
+
+        const feedback = document.createElement("span");
+        feedback.className = "feedback " + (isCorrect ? "ok" : "err");
+        feedback.textContent = isCorrect ? "richtig" : "Lösung: " + prettyAnswer(input.dataset.ans);
+        input.insertAdjacentElement("afterend", feedback);
+
+        if (isCorrect) score += 1;
+      });
+
+      lastAutoScore = score;
+      updateScoreDisplay(score);
+
+      const student = document.getElementById("studentName").value.trim() || "Schüler/in";
+      document.getElementById("resultTitle").textContent = "Ergebnis für " + student;
+      document.getElementById("result").style.display = "block";
+      document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function submitExam() {
+      const status = document.getElementById("submitStatus");
+      const button = document.getElementById("submitButton");
+
+      if (!FORM_ENDPOINT.startsWith("https://formspree.io/f/")) {
+        status.className = "submit-status err";
+        status.textContent = "Abgabe noch nicht eingerichtet: Bitte zuerst eine gültige Formspree-Adresse in FORM_ENDPOINT eintragen.";
+        document.getElementById("result").style.display = "block";
+        return;
+      }
+
+      if (!document.getElementById("studentName").value.trim()) {
+        status.className = "submit-status err";
+        status.textContent = "Bitte vor der Abgabe einen Namen eintragen.";
+        document.getElementById("studentName").focus();
+        return;
+      }
+
+      checkExam();
+      status.className = "submit-status";
+      status.textContent = "Abgabe wird gesendet...";
+      button.disabled = true;
+
+      try {
+        const response = await fetch(FORM_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(buildSubmission())
+        });
+
+        if (!response.ok) {
+          throw new Error("Formular-Dienst hat die Abgabe abgelehnt.");
+        }
+
+        status.className = "submit-status ok";
+        status.textContent = "Abgabe erfolgreich gesendet.";
+      } catch (error) {
+        status.className = "submit-status err";
+        status.textContent = "Abgabe konnte nicht gesendet werden. Bitte Internetverbindung und Formular-Adresse prüfen.";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function resetExam() {
+      lastAutoScore = 0;
+      document.querySelectorAll("input[data-ans]").forEach((input) => {
+        input.value = "";
+        input.closest(".exercise-row").classList.remove("correct", "incorrect");
+      });
+      document.querySelectorAll(".feedback").forEach((el) => el.remove());
+      document.getElementById("writingText").value = "";
+      document.getElementById("manualScore").value = 0;
+      document.getElementById("result").style.display = "none";
+      document.getElementById("submitStatus").textContent = "";
+      document.getElementById("submitStatus").className = "submit-status";
+      updateScoreDisplay(0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("examDate").value = new Date().toLocaleDateString("de-DE");
+    updateScoreDisplay(0);
+  </script>
+</body>
+</html>
